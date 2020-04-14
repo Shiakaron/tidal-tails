@@ -26,7 +26,7 @@ def compute_energy_of_twobodysystem(y):
     KE = (Ma / 2) * (np.linalg.norm(rdota) ** 2) + (Mb / 2) * (np.linalg.norm(rdotb) ** 2)
 
     E = PE + KE
-    print("Energies: ", "{:.16f}".format(PE), "{:.16f}".format(KE), "{:.16f}".format(E))
+    print("Energies: ", "{:.16f}".format(PE), "{:.16f}".format(KE), "{:.16f}".format(E), deltar)
     return E
 
 def two_body_problem_derivatives(t, y):
@@ -72,12 +72,25 @@ def plot(sol):
     ya = sol.y[1]
     xb = sol.y[3]
     yb = sol.y[4]
-    plt.plot(xa,ya,xb,yb)
-    plt.show()
+    # plt.plot(xa,ya,xb,yb)
+    # plt.show()
+    fig, ax = plt.subplots()
+    im, = ax.plot()
+    dot = ax.scatter(xa[0],ya[0])
+    frames = len(xa)
+
+    def animate(i):
+        ax.set_xlabel(i)
+        ax.set_xlim(-100,100)
+        ax.set_ylim(-100,100)
+        plot = im.set_data(xa[:i])
+
+    anim = FuncAnimation(fig, animate, frames=frames, interval = 50)
+
 
 def main():
-    x = 10
-    y = 10
+    x = 40
+    y = 15
     takis_factor = 1
 
     # circular orbit
@@ -89,12 +102,13 @@ def main():
     # vay = np.sqrt(Mb*Mb / (x*(Ma+Mb))) * takis_factor
 
     # parabolic orbit from far away, trying to get closes approach to be some desired value
-    closestapproach = 10
-    vax = np.sqrt(Ma*closestapproach/4) / y
+    # vax = np.sqrt(Ma*Mb*closestapproach/ (2*(Ma+Mb)) ) / y
+    # vax = np.sqrt(closestapproach/2/(x*x+y*y))
+    vax = np.sqrt(Mb*Mb / ((Ma+Mb)*np.sqrt(x*x+y*y)))
     vay = 0
 
     # start ode solver
-    tf = 10000
+    tf = 1000
     teval = np.arange(0,tf,0.01)
     y0 = np.array([-x,-y,0, x,y,0, vax,vay,0, -vax,-vay,0])
     sol = ode_solver(two_body_problem_derivatives, (0,tf), y0, teval)
