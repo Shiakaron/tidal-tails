@@ -94,14 +94,14 @@ def plot(sol):
 
     def animate(i):
         ax1.set_xlabel(i)
-        xlist = [xa[:i*dataperframe], xb[:i*dataperframe]]
-        ylist = [ya[:i*dataperframe], yb[:i*dataperframe]]
+        xlist = [xa[:i*dataperframe], xb[:i*dataperframe], [xa[i*dataperframe],xb[i*dataperframe]]]
+        ylist = [ya[:i*dataperframe], yb[:i*dataperframe], [xa[i*dataperframe],xb[i*dataperframe]]]
 
         for lnum,line in enumerate(lines):
             line.set_data(xlist[lnum], ylist[lnum]) # set data for each line separately.
         return lines
 
-    anim = FuncAnimation(fig, animate, frames=int(len(xa)/dataperframe), interval = 10, init_func=init, blit=True)
+    anim = FuncAnimation(fig, animate, frames=int(len(xa)/dataperframe), interval = 5, init_func=init, blit=True)
     plt.show()
 
 def main():
