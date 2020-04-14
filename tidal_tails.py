@@ -2,7 +2,8 @@ import numpy as np
 from scipy import integrate
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-
+import matplotlib
+import os
 # global variables
 Ma = 1
 Mb = 1
@@ -80,7 +81,7 @@ def plot(sol):
     fig = plt.figure()
     ax1 = plt.axes(xlim=(-100,100), ylim=(-100,100))
     line, = ax1.plot([], [])
-    dataperframe = 100
+    dataperframe = 200
     plotlays, plotcols = [2], ["black","red"]
     lines = []
     for index in range(2):
@@ -102,7 +103,10 @@ def plot(sol):
         return lines
 
     anim = FuncAnimation(fig, animate, frames=int(len(xa)/dataperframe), interval = 5, init_func=init, blit=True)
+    path = os.getcwd()+"\\twobody_animation.gif"
+    print(path)
     plt.show()
+    anim.save(path)
 
 def main():
     x = 40
