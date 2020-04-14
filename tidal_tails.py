@@ -1,6 +1,7 @@
 import numpy as np
 from scipy import integrate
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 # global variables
 Ma = 1
@@ -65,7 +66,7 @@ def ode_solver(fun, t_span, y0, t_eval):
 
 def plot(sol):
     """
-
+    animation of trajectories
     """
     # positions
     xa = sol.y[0]
@@ -74,19 +75,34 @@ def plot(sol):
     yb = sol.y[4]
     # plt.plot(xa,ya,xb,yb)
     # plt.show()
-    fig, ax = plt.subplots()
-    im, = ax.plot()
-    dot = ax.scatter(xa[0],ya[0])
-    frames = len(xa)
+
+    #initialise figure
+    fig = plt.figure()
+    ax1 = plt.axes(xlim=(-100,100), ylim=(-100,100))
+    line, = ax1.plot([], [])
+    dataperframe = 100
+    plotlays, plotcols = [2], ["black","red"]
+    lines = []
+    for index in range(2):
+        lobj = ax1.plot([],[],lw=2,color=plotcols[index])[0]
+        lines.append(lobj)
+
+    def init():
+        for line in lines:
+            line.set_data([],[])
+        return lines
 
     def animate(i):
-        ax.set_xlabel(i)
-        ax.set_xlim(-100,100)
-        ax.set_ylim(-100,100)
-        plot = im.set_data(xa[:i])
+        ax1.set_xlabel(i)
+        xlist = [xa[:i*dataperframe], xb[:i*dataperframe]]
+        ylist = [ya[:i*dataperframe], yb[:i*dataperframe]]
 
-    anim = FuncAnimation(fig, animate, frames=frames, interval = 50)
+        for lnum,line in enumerate(lines):
+            line.set_data(xlist[lnum], ylist[lnum]) # set data for each line separately.
+        return lines
 
+    anim = FuncAnimation(fig, animate, frames=int(len(xa)/dataperframe), interval = 10, init_func=init, blit=True)
+    plt.show()
 
 def main():
     x = 40
@@ -94,8 +110,8 @@ def main():
     takis_factor = 1
 
     # circular orbit
-    vax = 0
-    vay = np.sqrt(Mb*Mb / (2*x*(Ma+Mb))) * takis_factor
+    # vax = 0
+    # vay = np.sqrt(Mb*Mb / (2*x*(Ma+Mb))) * takis_factor
 
     # parabolic orbit from closest approach
     # vax = 0
