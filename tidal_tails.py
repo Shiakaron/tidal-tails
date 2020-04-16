@@ -76,7 +76,7 @@ def makegif(sol):
     yb = sol.y[4]
 
     #initialise figure
-    fig = plt.figure()
+    fig = plt.figure(figsize=(8,8))
     ax1 = plt.axes(xlim=(-100,100), ylim=(-100,100))
     line, = ax1.plot([], [])
     dataperframe = 200
@@ -115,7 +115,8 @@ def plot(sol):
     ya = sol.y[1]
     xb = sol.y[3]
     yb = sol.y[4]
-    plt.plot(xa,ya,xb,yb)
+    fig, ax = plt.subplots(figsize=(8,8))
+    ax.plot(xa,ya,xb,yb)
     plt.show()
 
 def main():
