@@ -40,7 +40,7 @@ def two_body_problem_derivatives(t, y):
 
     return: [rdots], [rdotdots]
     """
-    E = compute_energy_of_twobodysystem(y)
+    # E = compute_energy_of_twobodysystem(y)
     # positions
     ra = np.array([y[0:3]])
     rb = np.array([y[3:6]])
@@ -62,10 +62,10 @@ def ode_solver(fun, t_span, y0, t_eval):
 
     return: solution of ode solver
     """
-    sol = integrate.solve_ivp(fun = fun, t_span = t_span, y0 = y0, t_eval=t_eval)
+    sol = integrate.solve_ivp(fun = fun, t_span = t_span, y0 = y0, t_eval=t_eval, method="Radau")
     return sol
 
-def plot(sol):
+def makegif(sol):
     """
     animation of trajectories
     """
@@ -74,8 +74,6 @@ def plot(sol):
     ya = sol.y[1]
     xb = sol.y[3]
     yb = sol.y[4]
-    # plt.plot(xa,ya,xb,yb)
-    # plt.show()
 
     #initialise figure
     fig = plt.figure()
@@ -108,24 +106,34 @@ def plot(sol):
     plt.show()
     anim.save(path)
 
-def main():
-    x = 40
-    y = 15
-    takis_factor = 1
+def plot(sol):
+    """
+    animation of trajectories
+    """
+    # positions
+    xa = sol.y[0]
+    ya = sol.y[1]
+    xb = sol.y[3]
+    yb = sol.y[4]
+    plt.plot(xa,ya,xb,yb)
+    plt.show()
 
+def main():
     # circular orbit
-    # vax = 0
-    # vay = np.sqrt(Mb*Mb / (2*x*(Ma+Mb))) * takis_factor
+    x = 10
+    y = 0
+    vax = 0
+    vay = np.sqrt(Mb*Mb / (2*x*(Ma+Mb)))
 
     # parabolic orbit from closest approach
     # vax = 0
-    # vay = np.sqrt(Mb*Mb / (x*(Ma+Mb))) * takis_factor
+    # vay = np.sqrt(Mb*Mb / (x*(Ma+Mb)))
 
     # parabolic orbit from far away, trying to get closes approach to be some desired value
-    # vax = np.sqrt(Ma*Mb*closestapproach/ (2*(Ma+Mb)) ) / y
-    # vax = np.sqrt(closestapproach/2/(x*x+y*y))
-    vax = np.sqrt(Mb*Mb / ((Ma+Mb)*np.sqrt(x*x+y*y)))
-    vay = 0
+    # x = 40
+    # y = 15
+    # vax = np.sqrt(Mb*Mb / ((Ma+Mb)*np.sqrt(x*x+y*y)))
+    # vay = 0
 
     # start ode solver
     tf = 1000
