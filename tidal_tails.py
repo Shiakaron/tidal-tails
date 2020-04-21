@@ -65,7 +65,7 @@ def ode_solver(fun, t_span, y0, t_eval):
     sol = integrate.solve_ivp(fun = fun, t_span = t_span, y0 = y0, t_eval=t_eval, method="Radau")
     return sol
 
-def makegif(sol):
+def makegif(sol, tag, lim):
     """
     animation of trajectories
     """
@@ -77,38 +77,41 @@ def makegif(sol):
 
     #initialise figure
     fig = plt.figure(figsize=(8,8))
-    ax1 = plt.axes(xlim=(-100,100), ylim=(-100,100))
-    line, = ax1.plot([], [])
-    dataperframe = 200
+    ax1 = plt.axes(xlim=(-lim,lim), ylim=(-lim,lim))
+    # line, = ax1.plot([], [])
+
     plotlays, plotcols = [2], ["black","red"]
-    lines = []
+    lines = [] # will contain all the line objects
     for index in range(2):
-        lobj = ax1.plot([],[],lw=2,color=plotcols[index])[0]
+        lobj = ax1.plot([],[],lw=0.5,color=plotcols[index],markersize=10,marker="o")[0]
         lines.append(lobj)
+    #lines.append(ax1.plot([],[],linestyle="",color=plotcols[-1],markersize=10,marker="o")[0])
 
     def init():
+        # function used to initialise line_objects to null data (maybe this is useless but keep just in case)
         for line in lines:
             line.set_data([],[])
         return lines
 
+    dataperframe = 200 # to speed up the animation i set it to ignore every 200 data points
     def animate(i):
-        ax1.set_xlabel(i)
-        xlist = [xa[:i*dataperframe], xb[:i*dataperframe], [xa[i*dataperframe],xb[i*dataperframe]]]
-        ylist = [ya[:i*dataperframe], yb[:i*dataperframe], [xa[i*dataperframe],xb[i*dataperframe]]]
-
+        # function used to plot each frame
+        up_to_point = i*dataperframe
+        ax1.set_xlabel(i) # label the frame (can be removed later)
+        xlist = [xa[:up_to_point], xb[:up_to_point] ] # contains the new data for the frame
+        ylist = [ya[:up_to_point], yb[:up_to_point] ]
         for lnum,line in enumerate(lines):
             line.set_data(xlist[lnum], ylist[lnum]) # set data for each line separately.
+            line.set_markevery((up_to_point-1,up_to_point))
         return lines
 
     anim = FuncAnimation(fig, animate, frames=int(len(xa)/dataperframe), interval = 5, init_func=init, blit=True)
-    path = os.getcwd()+"\\twobody_animation.gif"
-    print(path)
-    plt.show()
-    anim.save(path)
+    path = os.getcwd()+"\\twobody_animation_"+tag+"_.gif"
+    anim.save(path,writer='imagemagick')
 
 def plot(sol):
     """
-    animation of trajectories
+    plot of trajectories
     """
     # positions
     xa = sol.y[0]
@@ -121,10 +124,7 @@ def plot(sol):
 
 def main():
     # circular orbit
-    x = 10
-    y = 0
-    vax = 0
-    vay = np.sqrt(Mb*Mb / (2*x*(Ma+Mb)))
+    solve_circular_orbit()
 
     # parabolic orbit from closest approach
     # vax = 0
@@ -137,11 +137,27 @@ def main():
     # vay = 0
 
     # start ode solver
+    # tf = 1000
+    # teval = np.arange(0,tf,0.01)
+    # y0 = np.array([-x,-y,0, x,y,0, vax,vay,0, -vax,-vay,0])
+    # sol = ode_solver(two_body_problem_derivatives, (0,tf), y0, teval)
+    # plot(sol)
+    # makegif(sol,circular,)
+
+def solve_circular_orbit():
+    # circular orbit
+    x = 10
+    y = 0
+    vax = 0
+    vay = np.sqrt(Mb*Mb / (2*x*(Ma+Mb)))
+    # start ode solver
     tf = 1000
     teval = np.arange(0,tf,0.01)
     y0 = np.array([-x,-y,0, x,y,0, vax,vay,0, -vax,-vay,0])
     sol = ode_solver(two_body_problem_derivatives, (0,tf), y0, teval)
-    plot(sol)
+    #plot(sol)
+    makegif(sol,"circular_orbit",x+2)
+
 
 if (__name__ == '__main__'):
     main()
