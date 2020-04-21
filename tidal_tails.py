@@ -65,7 +65,7 @@ def ode_solver(fun, t_span, y0, t_eval):
     sol = integrate.solve_ivp(fun = fun, t_span = t_span, y0 = y0, t_eval=t_eval, method="Radau")
     return sol
 
-def makegif(sol, tag, lim):
+def makegif(sol, tag, lim, dataperframe):
     """
     animation of trajectories
     """
@@ -93,7 +93,6 @@ def makegif(sol, tag, lim):
             line.set_data([],[])
         return lines
 
-    dataperframe = 200 # to speed up the animation i set it to ignore every 200 data points
     def animate(i):
         # function used to plot each frame
         up_to_point = i*dataperframe
@@ -123,26 +122,8 @@ def plot(sol):
     plt.show()
 
 def main():
-    # circular orbit
-    solve_circular_orbit()
-
-    # parabolic orbit from closest approach
-    # vax = 0
-    # vay = np.sqrt(Mb*Mb / (x*(Ma+Mb)))
-
-    # parabolic orbit from far away, trying to get closes approach to be some desired value
-    # x = 40
-    # y = 15
-    # vax = np.sqrt(Mb*Mb / ((Ma+Mb)*np.sqrt(x*x+y*y)))
-    # vay = 0
-
-    # start ode solver
-    # tf = 1000
-    # teval = np.arange(0,tf,0.01)
-    # y0 = np.array([-x,-y,0, x,y,0, vax,vay,0, -vax,-vay,0])
-    # sol = ode_solver(two_body_problem_derivatives, (0,tf), y0, teval)
-    # plot(sol)
-    # makegif(sol,circular,)
+    # solve_circular_orbit() # circular orbit
+    solve_parabolic_orbit() # parabolic orbit from far away, trying to get closes approach to be some desired value
 
 def solve_circular_orbit():
     # circular orbit
@@ -156,7 +137,21 @@ def solve_circular_orbit():
     y0 = np.array([-x,-y,0, x,y,0, vax,vay,0, -vax,-vay,0])
     sol = ode_solver(two_body_problem_derivatives, (0,tf), y0, teval)
     #plot(sol)
-    makegif(sol,"circular_orbit",x+2)
+    makegif(sol,"circular_orbit",x+2,200)
+
+def solve_parabolic_orbit():
+    # parabolic orbit from far away, trying to get closes approach to be some desired value
+    x = 40
+    y = 15
+    vax = np.sqrt(Mb*Mb / ((Ma+Mb)*np.sqrt(x*x+y*y)))
+    vay = 0
+    # start ode solver
+    tf = 1000
+    teval = np.arange(0,tf,0.01)
+    y0 = np.array([-x,-y,0, x,y,0, vax,vay,0, -vax,-vay,0])
+    sol = ode_solver(two_body_problem_derivatives, (0,tf), y0, teval)
+    #plot(sol)
+    makegif(sol,"parabolic_orbit",100,400)
 
 
 if (__name__ == '__main__'):
